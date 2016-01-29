@@ -1,0 +1,43 @@
+<div class="modal">
+	<ion-header-bar>
+		<h1 class="title">Pesquisar</h1>
+	</ion-header-bar>
+	
+	<ion-content ng-controller="CidadesController">
+		<div class="col col-100">
+            <label class="item item-input">
+                <i class="icon ion-search placeholder-icon"></i>
+                <input type="text" placeholder="Nome">
+            </label>
+        </div>
+
+        <div class="col col-100">
+            <label class="item item-input item-select">
+                <div class="input-label">
+                    UF
+                </div>
+                <select ng-model="uf" ng-change="ufChange()">
+                    <option value="0">Todas UF</option>
+                    <option  ng-repeat="u in ufs" value="{{u.idUf}}">{{u.uf}}</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="col col-100" ng-show="uf != 0">
+            <label class="item item-input item-select">
+                <div class="input-label">
+                   Cidade
+                </div>
+                <select>
+                    <option  ng-repeat="ct in cidades" value="{{ct.idCidade}}">{{ct.nomeCidade}}</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="col col-100">
+            <button class="button button-positive button-block ion-icon icon-left ion-search">Buscar</button>
+        </div>
+
+		<button class="button button-full button-stable" ng-click="closeModal()">Cancelar</button>
+	</ion-content>
+</div>
