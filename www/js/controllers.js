@@ -1,6 +1,6 @@
 angular.module('app.controllers', [])
 
-.controller('MapController', function($scope, $ionicLoading, $rootScope) {
+.controller('MapController', function($scope, $ionicLoading, $ionicPopup, $rootScope) {
  
     google.maps.event.addDomListener(window, 'load', function() {
         var myLatlng = new google.maps.LatLng(37.3000, -120.4833);
@@ -12,62 +12,93 @@ angular.module('app.controllers', [])
         };
  
         var map = new google.maps.Map(document.getElementById("map"), mapOptions);
- 
+
         navigator.geolocation.getCurrentPosition(function(pos) {
             map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+        }, function(error){
+            $ionicPopup.alert({
+                title: 'Erro!',
+                template: 'Não foi possivel encontrar sua localização!'
+            });
         });
  
         $scope.map = map;
     }); 
 
+
     $rootScope.makeMarkers = function(pontos) {
         angular.forEach(pontos, function (i, item) {
-            var myLocation = new google.maps.Marker({
+            var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(i.latitude, i.longitude),
                 map: $scope.map,
-                title: item.idEndereco
+                title: i.idEndereco
+            });
+
+            var infowindow = new google.maps.InfoWindow({
+                content: 'Info<br/><button ng-click="openShow">Abrir</button>',
+            });
+
+            marker.addListener('click', function() {
+                $rootScope.openModal(2);
             });
         });
         navigator.geolocation.getCurrentPosition(function(pos) {
             $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
         });
-    }   
- 
+    }
 })
 
-.controller('ModalController', function($scope, $ionicModal) {
-    
-    $ionicModal.fromTemplateUrl('modal.html', {
-        scope: $scope,
-        animation: 'slide-in-up'
+.controller('ModalController', ['$scope', '$ionicModal', '$rootScope', function($scope, $ionicModal, $rootScope) {
 
-    }).then(function(modal) {
-        $scope.modal = modal;
-    });
+        $ionicModal.fromTemplateUrl('modal.html', {
+            id: 1,
+            scope: $scope,
+            animation: 'slide-in-up'
 
-    $scope.openModal = function() {
-        $scope.modal.show();
-    };
+        }).then(function(modal) {
+            $scope.modal1 = modal;
+        });
 
-    $scope.closeModal = function() {
-        $scope.modal.hide();
-    };
-    
-    //Cleanup the modal when we're done with it!
-    $scope.$on('$destroy', function() {
-        $scope.modal.remove();
-    });
+        $ionicModal.fromTemplateUrl('show.html', {
+            id: 2,
+            scope: $scope,
+            animation: 'slide-in-up'
 
-    // Execute action on hide modal
-    $scope.$on('modal.hidden', function() {
-        // Execute action
-    });
+        }).then(function(modal) {
+            $scope.modal2 = modal;
+        });
 
-    // Execute action on remove modal
-    $scope.$on('modal.removed', function() {
-        // Execute action
-    });
-})
+        $rootScope.openModal = function(index) {
+            if(index == 1)
+                $scope.modal1.show();
+            else
+                $scope.modal2.show();
+        };
+
+        $rootScope.closeModal = function(index) {
+            if(index == 1)
+                $scope.modal1.hide();
+            else
+                $scope.modal2.hide();
+        };
+        
+        //Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            $scope.modal1.remove();
+            $scope.modal2.remove();
+        });
+
+        // Execute action on hide modal
+        $scope.$on('modal.hidden', function() {
+            // Execute action
+        });
+
+        // Execute action on remove modal
+        $scope.$on('modal.removed', function() {
+            // Execute action
+        });
+    }
+])
 
 .controller('PesquisaController', function($scope, $http, $ionicLoading, $ionicPopup, $rootScope) {
     $scope.ufs = [];
@@ -140,8 +171,8 @@ angular.module('app.controllers', [])
         $http.post('http://localhost:8000/api/app/mapa', data).then(
             function(response){
                 $rootScope.makeMarkers(response.data);
+                $rootScope.closeModal(1);
                 $ionicLoading.hide();
-                $scope.closeModal();
             },
             function(response){
                 $ionicLoading.hide();

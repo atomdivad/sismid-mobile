@@ -24,7 +24,7 @@
         <script src="js/routes.js"></script>
         <script src="js/directives.js"></script>
     </head>
-    <body ng-app="app" animation="slide-left-right-ios7">
+    <body ng-app="app">
 
         <ion-pane>
             <ion-header-bar class="bar-stable">
@@ -38,9 +38,9 @@
             <div class="tabs tabs-icon-top" ng-controller="ModalController">
                 <!--<a class="tab-item" href="#/mapa"><i class="icon ion-location"></i>Mapa</a>
                 <a class="tab-item" href="#/lista"><i class="icon ion-ios-list-outline"></i>Lista</a> -->
-                <a class="tab-item" ng-click="openModal()"><i class="icon ion-search"></i>Pesquisar</a>
+                <a class="tab-item" ng-click="openModal(1)"><i class="icon ion-search"></i>Pesquisar</a>
             </div>
         </ion-pane>
-        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCsOdEoVwUQhPynqvu6OeA6qC9jsVniSlE"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCsOdEoVwUQhPynqvu6OeA6qC9jsVniSlE&sensor=true"></script>
     </body>
 </html>

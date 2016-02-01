@@ -17,7 +17,7 @@ angular.module('app.routes', [])
     .state('lista', {
       url: '/lista',
       templateUrl: 'templates/lista.html',
-      controller: 'CidadesController'
+      controller: 'PesquisaController'
     });
 
   // if none of the above states are matched, use this as the fallback
