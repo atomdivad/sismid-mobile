@@ -7,7 +7,7 @@ angular.module('app.controllers', [])
  
         var mapOptions = {
             center: myLatlng,
-            zoom: 3,
+            zoom: 16,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
  
@@ -15,7 +15,7 @@ angular.module('app.controllers', [])
 
         navigator.geolocation.getCurrentPosition(function(pos) {
             map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-            $scope.map.setZoom(3);
+            $scope.map.setZoom(16);
             var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
                 map: map,
@@ -52,7 +52,7 @@ angular.module('app.controllers', [])
         });
         navigator.geolocation.getCurrentPosition(function(pos) {
             $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-            $scope.map.setZoom(3);
+            $scope.map.setZoom(16);
         });
     }
 })
