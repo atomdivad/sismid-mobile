@@ -3,7 +3,7 @@ angular.module('app.controllers', [])
 .controller('MapController', function($scope, $ionicLoading, $ionicPopup, $rootScope) {
  
     google.maps.event.addDomListener(window, 'load', function() {
-        var myLatlng = new google.maps.LatLng(37.3000, -120.4833);
+        var myLatlng = new google.maps.LatLng(-15.780, -47.929);
  
         var mapOptions = {
             center: myLatlng,
@@ -15,6 +15,13 @@ angular.module('app.controllers', [])
 
         navigator.geolocation.getCurrentPosition(function(pos) {
             map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+            $scope.map.setZoom(3);
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
+                map: map,
+                title: 'Minha Posição',
+                icon: 'img/home.png'
+            });
         }, function(error){
             $ionicPopup.alert({
                 title: 'Erro!',
@@ -39,11 +46,13 @@ angular.module('app.controllers', [])
             });
 
             marker.addListener('click', function() {
+                $rootScope.getPidInfo(i.id);
                 $rootScope.openModal(2);
             });
         });
         navigator.geolocation.getCurrentPosition(function(pos) {
             $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+            $scope.map.setZoom(3);
         });
     }
 })
@@ -183,4 +192,33 @@ angular.module('app.controllers', [])
             }
         );
     }
+})
+
+.controller('InfoModal', function($scope, $http, $ionicLoading, $ionicPopup, $rootScope, $ionicSlideBoxDelegate) {
+    $rootScope.getPidInfo = function(id) {
+        $ionicLoading.show({
+            content: 'Loading',
+            animation: 'fade-in',
+            showBackdrop: false,
+            maxWidth: 200,
+            showDelay: 0
+        });
+        $scope.info = [];
+        $http.get('http://localhost:8000/api/pid/'+id+'/show').then(
+        function(response) {
+            $scope.info = response.data;
+            $ionicLoading.hide();
+            //console.log(JSON.stringify($scope.info));
+        },    
+        function(){
+            $ionicLoading.hide();
+            $ionicPopup.alert({
+                title: 'Erro!',
+                template: 'Ocorreu algum erro ao tentar buscar os dados! Verifique sua conexão!'
+            });
+        }
+        );
+    }
+    $ionicSlideBoxDelegate.slide(0);
+
 });

@@ -1,11 +1,37 @@
-<div class="modal">
+<div class="modal" ng-controller="InfoModal">
     <ion-header-bar>
-        <h1 class="title">Info</h1>
+        <h1 class="title">{{ info.nome }}</h1> 
+        <a ng-controller="PesquisaController" class="button icon-left ion-chevron-left button-clear button-dark" ng-click="closeModal(2)"> Voltar</a>
     </ion-header-bar>
     
-    <ion-content ng-controller="PesquisaController">
-        
+    <ion-content>	
+    	<div class="list card">
+			<div class="item">
+				<h3 title="{{ info.nome }}">{{ info.nome }}</h3>
+				<p>{{ info.tipo }}</p>
+			</div>
+			<div class="item item-body">
+				<a href="#" class="item item-icon-left">
+					<i class="icon ion-home"></i>
+					{{ info.endereco.logradouro }}
+					{{ info.endereco.numero }}
+					{{ info.endereco.complemento }}
+					{{ info.endereco.bairro }} <br/>
+					CEP {{ info.endereco.cep }} <br/>
+					{{ info.endereco.cidade }} - {{ info.endereco.uf }}
+				</a>
+				<a href="#" class="item item-icon-left" ng-show="info.email.length > 0"><i class="icon ion-email"></i>{{ info.email}}</a>
+				<a href="{{ info.url}}" class="item item-icon-left" ng-show="info.url.length > 0"><i class="icon ion-link"></i>{{ info.url }}</a>
+				<a href="#" class="item item-icon-left" ng-repeat="t in info.telefones"><i class="icon ion-ios-telephone"></i>{{ t.telefone }}</a>
+			</div>
+		</div>	
 
-        <button class="button button-full button-stable" ng-click="closeModal(2)">Cancelar</button>
+		<div class="item card">
+			<ion-slide-box auto-play="true" does-continue="true">
+				<ion-slide ng-repeat="foto in info.fotos">
+					<img class="image-slide" ng-src="http://localhost:8000/api/{{ info.idPid }}/fotos/{{ foto.nome }}">
+				</ion-slide>
+			</ion-slide-box>
+		</div>
     </ion-content>
 </div>
