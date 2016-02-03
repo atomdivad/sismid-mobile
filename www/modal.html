@@ -17,7 +17,7 @@
                     UF
                 </div>
                 <select ng-model="uf" ng-change="ufChange()">
-                    <option value="0">Todas UF</option>
+                    <option value="0">Sem UF</option>
                     <option  ng-repeat="u in ufs" value="{{u.idUf}}">{{u.uf}}</option>
                 </select>
             </label>
@@ -34,13 +34,13 @@
             </label>
         </div>
 
-        <div class="col col-100">
+        <div class="col col-100" ng-show="uf == 0">
             <div class="input-label">
                Distância {{ distancia }}Km
             </div>
         </div>
 
-        <div class="col col-100">
+        <div class="col col-100" ng-show="uf == 0">
             <div class="item range range-positive">                
                 1Km
                 <input type="range" name="volume" min="1" max="100" ng-model="distancia">
