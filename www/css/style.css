@@ -4,8 +4,18 @@
 }
  
 #map {
+	margin-top: 45px;
     width: 100%;
-    height: 90%;
+    height: 85%;
+    float:left;
+}
+
+#panel {
+	margin-top: 45px;
+    width: 100%;
+    height: 85%;
+    border: 1px solid black;
+    float:right;
 }
 
 .image-slide {

@@ -11,14 +11,16 @@
 				<p>{{ info.tipo }}</p>
 			</div>
 			<div class="item item-body">
-				<a href="#" class="item item-icon-left">
-					<i class="icon ion-home"></i>
+				<a href="#" class="item item-icon-left" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude)">
+					<i class="icon ion-navigate"></i>
 					{{ info.endereco.logradouro }}
 					{{ info.endereco.numero }}
 					{{ info.endereco.complemento }}
 					{{ info.endereco.bairro }} <br/>
 					CEP {{ info.endereco.cep }} <br/>
-					{{ info.endereco.cidade }} - {{ info.endereco.uf }}
+					{{ info.endereco.cidade }} - {{ info.endereco.uf }} <br/>
+					Distancia {{ distancia }} <br/>
+					<small>Toque para exibir a rota</small>
 				</a>
 				<a href="#" class="item item-icon-left" ng-show="info.email.length > 0"><i class="icon ion-email"></i>{{ info.email}}</a>
 				<a href="{{ info.url}}" class="item item-icon-left" ng-show="info.url.length > 0"><i class="icon ion-link"></i>{{ info.url }}</a>

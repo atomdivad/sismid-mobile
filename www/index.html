@@ -25,23 +25,23 @@
         <script src="js/directives.js"></script>
         <script src="js/markerclusterer.js"></script>
     </head>
-    <body ng-app="app">
+    <body ng-app="app" animation="slide-left-right-ios7">
 
-        <ion-pane>
+        <ion-pane ng-controller="MapController">
             <ion-header-bar class="bar-stable">
                 <h1 class="title">SisMid</h1>
             </ion-header-bar>
 
             <ion-nav-view>
-                <div id="map" data-tap-disabled="true"  ng-controller="MapController"></div>
+                <div id="map" data-tap-disabled="true" ng-init="initialize()"></div>
             </ion-nav-view>
 
-            <div class="tabs tabs-icon-top" ng-controller="ModalController">
-                <!--<a class="tab-item" href="#/mapa"><i class="icon ion-location"></i>Mapa</a>
-                <a class="tab-item" href="#/lista"><i class="icon ion-ios-list-outline"></i>Lista</a> -->
-                <a class="tab-item" ng-click="openModal(1)"><i class="icon ion-search"></i>Pesquisar</a>
+            <div class="tabs tabs-icon-top">
+                <!--<a class="tab-item" href="#/mapa"><i class="icon ion-location"></i>Mapa</a>-->
+                <a class="tab-item" ng-click="updatePosition()"><i class="icon ion-location"></i>Atualizar</a>
+                <a class="tab-item" ng-controller="ModalController" ng-click="openModal(1)"><i class="icon ion-search"></i>Pesquisar</a>
             </div>
         </ion-pane>
-        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCsOdEoVwUQhPynqvu6OeA6qC9jsVniSlE&sensor=true"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
     </body>
 </html>

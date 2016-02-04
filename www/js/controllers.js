@@ -11,15 +11,24 @@ angular.module('app.controllers', [])
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
  
-        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        var map = new google.maps.Map(document.getElementById("map"), mapOptions);        
 
+        $scope.map = map;
+        $scope.updatePosition();
+        $scope.directionsDisplay = new google.maps.DirectionsRenderer({
+            map: $scope.map,
+            panel: document.getElementById('panel'),
+        });
+    });
+
+    $scope.updatePosition =  function() {
         navigator.geolocation.getCurrentPosition(function(pos) {
             $rootScope.pos = {lat: pos.coords.latitude, lng: pos.coords.longitude}
-            map.setCenter($rootScope.pos);
+            $scope.map.setCenter($rootScope.pos);
             $scope.map.setZoom(10);
-            var marker = new google.maps.Marker({
+            $scope.myPositon = new google.maps.Marker({
                 position: $rootScope.pos,
-                map: map,
+                map: $scope.map,
                 title: 'Minha Posição',
                 icon: 'img/home.png'
             });
@@ -28,14 +37,53 @@ angular.module('app.controllers', [])
                 title: 'Erro!',
                 template: 'Não foi possivel encontrar sua localização!'
             });
-        });
- 
-        $scope.map = map;
-    }); 
+        }); 
+    }
 
+    $rootScope.getRoute = function(lat, lng) {
+        $ionicLoading.show({
+            content: 'Loading',
+            animation: 'fade-in',
+            showBackdrop: false,
+            maxWidth: 200,
+            showDelay: 0
+        });
+        var destino = new google.maps.LatLng(lat,lng);
+        var directionsService = new google.maps.DirectionsService();
+        var request = {
+            destination: destino,
+            origin: $rootScope.pos,
+            travelMode: google.maps.TravelMode.DRIVING,
+            avoidTolls: true
+        };
+        directionsService.route(request, function(response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                 $scope.directionsDisplay.setMap($scope.map);
+                $scope.directionsDisplay.setDirections(response);
+                $rootScope.closeModal(2);
+                $ionicLoading.hide();
+            }
+        });
+    }
+
+    $rootScope.getDistance = function(lat, lng) {
+        var destino = new google.maps.LatLng(lat,lng);
+        var distanceService = new google.maps.DistanceMatrixService();
+        var request = {
+            destinations: [destino] ,
+            origins: [$rootScope.pos],
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.METRIC,
+        };
+        distanceService.getDistanceMatrix(request, function(response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                $rootScope.distancia = response.rows[0].elements[0].distance.text;
+            }
+        });
+    }
 
     $rootScope.makeMarkers = function(pontos, tipo) {
-        
+        $scope.directionsDisplay.setMap(null);
         if(typeof $rootScope.markers != "undefined" && $rootScope.markers.length > 0) {
             for (var i = 0; i < $rootScope.markers.length; i++) {
                 $rootScope.markers[i].setMap(null);
@@ -51,10 +99,6 @@ angular.module('app.controllers', [])
             });
             $rootScope.markers.push(marker);
 
-            var infowindow = new google.maps.InfoWindow({
-                content: 'Info<br/><button ng-click="openShow">Abrir</button>',
-            });
-
             marker.addListener('click', function() {
                 $rootScope.getPidInfo(i.id);
                 $rootScope.openModal(2);
@@ -67,7 +111,8 @@ angular.module('app.controllers', [])
             $rootScope.markerCluster = new MarkerClusterer($scope.map, $rootScope.markers, {minimumClusterSize: 10});
             $scope.map.setZoom(4);
             var geocoder =  new google.maps.Geocoder();
-            geocoder.geocode({ 'address': 'DF, Brasil'}, function(results, status) {
+            var uf = pontos[0].uf;
+            geocoder.geocode({ 'address': uf+', Brasil'}, function(results, status) {
                 if (status === google.maps.GeocoderStatus.OK) {
                    $scope.map.setCenter(results[0].geometry.location);
                 }
@@ -76,7 +121,7 @@ angular.module('app.controllers', [])
         else {
             navigator.geolocation.getCurrentPosition(function(pos) {
             $scope.map.setCenter($rootScope.pos);
-            $scope.map.setZoom(10);
+            $scope.map.setZoom(14);
         });
         }
     }
@@ -205,7 +250,7 @@ angular.module('app.controllers', [])
             showDelay: 0
         });
         $http.post('http://localhost:8000/api/app/mapa', data).then(
-            function(response){
+            function(response){                
                 $rootScope.makeMarkers(response.data, $scope.uf);
                 $rootScope.closeModal(1);
                 $ionicLoading.hide();
@@ -234,8 +279,8 @@ angular.module('app.controllers', [])
         $http.get('http://localhost:8000/api/pid/'+id+'/show').then(
         function(response) {
             $scope.info = response.data;
+            $rootScope.getDistance($scope.info.endereco.latitude, $scope.info.endereco.longitude);
             $ionicLoading.hide();
-            //console.log(JSON.stringify($scope.info));
         },    
         function(){
             $ionicLoading.hide();
