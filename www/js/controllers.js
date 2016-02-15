@@ -14,24 +14,25 @@ angular.module('app.controllers', [])
         var map = new google.maps.Map(document.getElementById("map"), mapOptions);        
 
         $scope.map = map;
+                $scope.myPositon = new google.maps.Marker({
+                position: myLatlng,
+                map: $scope.map,
+                title: 'Minha Posição',
+                icon: 'img/home.png'
+        });
         $scope.updatePosition();
         $scope.directionsDisplay = new google.maps.DirectionsRenderer({
             map: $scope.map,
             panel: document.getElementById('panel'),
         });
-    });
+    });        
 
     $scope.updatePosition =  function() {
         navigator.geolocation.getCurrentPosition(function(pos) {
             $rootScope.pos = {lat: pos.coords.latitude, lng: pos.coords.longitude}
             $scope.map.setCenter($rootScope.pos);
             $scope.map.setZoom(10);
-            $scope.myPositon = new google.maps.Marker({
-                position: $rootScope.pos,
-                map: $scope.map,
-                title: 'Minha Posição',
-                icon: 'img/home.png'
-            });
+            $scope.myPositon.setPosition($rootScope.pos)
         }, function(error){
             $ionicPopup.alert({
                 title: 'Erro!',
@@ -190,7 +191,7 @@ angular.module('app.controllers', [])
         maxWidth: 200,
         showDelay: 0
     });
-    $http.get('http://localhost:8000/api/uf').then(
+    $http.get('http://dev.viniciusbrito.com/api/uf').then(
     function(response) {
         $scope.ufs = response.data;
         $ionicLoading.hide();
@@ -217,7 +218,7 @@ angular.module('app.controllers', [])
             showDelay: 0
         });
         $scope.cidades = [];
-        $http.get('http://localhost:8000/api/uf/'+$scope.uf+'/cidades').then(
+        $http.get('http://dev.viniciusbrito.com/api/uf/'+$scope.uf+'/cidades').then(
             function(response) {
               $scope.cidades = response.data;
               $ionicLoading.hide();
@@ -249,7 +250,7 @@ angular.module('app.controllers', [])
             maxWidth: 200,
             showDelay: 0
         });
-        $http.post('http://localhost:8000/api/app/mapa', data).then(
+        $http.post('http://dev.viniciusbrito.com/api/app/mapa', data).then(
             function(response){                
                 $rootScope.makeMarkers(response.data, $scope.uf);
                 $rootScope.closeModal(1);
@@ -276,7 +277,7 @@ angular.module('app.controllers', [])
             showDelay: 0
         });
         $scope.info = [];
-        $http.get('http://localhost:8000/api/pid/'+id+'/show').then(
+        $http.get('http://dev.viniciusbrito.com/api/pid/'+id+'/show').then(
         function(response) {
             $scope.info = response.data;
             $rootScope.getDistance($scope.info.endereco.latitude, $scope.info.endereco.longitude);
