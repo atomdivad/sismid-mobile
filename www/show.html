@@ -11,24 +11,26 @@
 				<p>{{ info.tipo }}</p>
 			</div>
 			<div class="item item-body">
-				<a href="#" class="item item-icon-left" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude)">
+				<a href="#" class="item">
 					<i class="icon ion-navigate"></i>
 					{{ info.endereco.logradouro }}
 					{{ info.endereco.numero }}
 					{{ info.endereco.complemento }}
 					{{ info.endereco.bairro }} <br/>
 					CEP {{ info.endereco.cep }} <br/>
-					{{ info.endereco.cidade }} - {{ info.endereco.uf }} <br/>
-					Distancia {{ distancia }} <br/>
-					<small>Toque para exibir a rota</small>
+					{{ info.endereco.cidade }} - {{ info.endereco.uf }} <br/>	
+					<button class="ion-icon ion-android-walk" title="Como chegar caminhando" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'WALKING')"></button>
+					<button class="ion-icon ion-android-bicycle" title="Como chegar de bicicleta" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'BICYCLING')"></button>
+					<button class="ion-icon ion-android-car" title="Como chegar de carro" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'DRIVING')"></button>
+					<button class="ion-icon ion-android-bus" title="Como chegar de transporte público" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'TRANSIT')"></button>
 				</a>
 				<a href="#" class="item item-icon-left" ng-show="info.email.length > 0"><i class="icon ion-email"></i>{{ info.email}}</a>
 				<a href="{{ info.url}}" class="item item-icon-left" ng-show="info.url.length > 0"><i class="icon ion-link"></i>{{ info.url }}</a>
-				<a href="#" class="item item-icon-left" ng-repeat="t in info.telefones"><i class="icon ion-ios-telephone"></i>{{ t.telefone }}</a>
+				<a href="#" class="item item-icon-left" ng-show="info.telefones.length > 0" ng-repeat="t in info.telefones"><i class="icon ion-ios-telephone"></i>{{ t.telefone }}</a>
 			</div>
 		</div>	
 
-		<div class="item card">
+		<div class="item card" ng-show="info.fotos.length > 0">
 			<ion-slide-box auto-play="true" does-continue="true">
 				<ion-slide ng-repeat="foto in info.fotos">
 					<img class="image-slide" ng-src="http://localhost:8000/api/{{ info.idPid }}/fotos/{{ foto.nome }}">

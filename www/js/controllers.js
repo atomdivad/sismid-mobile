@@ -25,8 +25,10 @@ angular.module('app.controllers', [])
             map: $scope.map,
             panel: document.getElementById('panel'),
         });
+        $scope.infowindow = new google.maps.InfoWindow();
     });        
 
+    /*atualiza minha posicao*/
     $scope.updatePosition =  function() {
         navigator.geolocation.getCurrentPosition(function(pos) {
             $rootScope.pos = {lat: pos.coords.latitude, lng: pos.coords.longitude}
@@ -38,10 +40,13 @@ angular.module('app.controllers', [])
                 title: 'Erro!',
                 template: 'Não foi possivel encontrar sua localização!'
             });
+            $rootScope.pos = {lat: -15.780, lng: -47.929}
+            $scope.myPositon.setPosition($rootScope.pos)
         }); 
     }
 
-    $rootScope.getRoute = function(lat, lng) {
+    /*faz a rota ate o pid*/
+    $rootScope.getRoute = function(lat, lng, mode) {
         $ionicLoading.show({
             content: 'Loading',
             animation: 'fade-in',
@@ -54,31 +59,27 @@ angular.module('app.controllers', [])
         var request = {
             destination: destino,
             origin: $rootScope.pos,
-            travelMode: google.maps.TravelMode.DRIVING,
+            travelMode: google.maps.TravelMode[mode],
             avoidTolls: true
         };
         directionsService.route(request, function(response, status) {
             if (status == google.maps.DirectionsStatus.OK) {
-                 $scope.directionsDisplay.setMap($scope.map);
+                $scope.directionsDisplay.setMap($scope.map);
                 $scope.directionsDisplay.setDirections(response);
+
+                $scope.infowindow.setContent('Distancia '+response.routes[0].legs[0].distance.text + "<br/> Duração: " + response.routes[0].legs[0].duration.text + " ");
+                $scope.infowindow.setPosition(response.routes[0].legs[0].end_location);
+                $scope.infowindow.open($scope.map);                
+                
                 $rootScope.closeModal(2);
                 $ionicLoading.hide();
             }
-        });
-    }
-
-    $rootScope.getDistance = function(lat, lng) {
-        var destino = new google.maps.LatLng(lat,lng);
-        var distanceService = new google.maps.DistanceMatrixService();
-        var request = {
-            destinations: [destino] ,
-            origins: [$rootScope.pos],
-            travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
-        };
-        distanceService.getDistanceMatrix(request, function(response, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                $rootScope.distancia = response.rows[0].elements[0].distance.text;
+            else {
+                $ionicLoading.hide();
+                $ionicPopup.alert({
+                title: 'Erro!',
+                template: 'Não foi possivel encontrar uma rota!'
+            });
             }
         });
     }
@@ -121,9 +122,13 @@ angular.module('app.controllers', [])
         }
         else {
             navigator.geolocation.getCurrentPosition(function(pos) {
-            $scope.map.setCenter($rootScope.pos);
-            $scope.map.setZoom(14);
-        });
+                if(typeof $rootScope.markerCluster === "object") {
+                    $rootScope.markerCluster.clearMarkers();
+                }
+                $rootScope.markerCluster = new MarkerClusterer($scope.map, $rootScope.markers, {minimumClusterSize: 10});
+                $scope.map.setCenter($rootScope.pos);
+                $scope.map.setZoom(13);
+            });
         }
     }
 })
@@ -231,11 +236,12 @@ angular.module('app.controllers', [])
                 });
             }
         );
+        $scope.cidade = '';
     }
 
     $scope.pesquisar = function() {
         var data = {
-            nome: $scope.nome   ,
+            nome: $scope.nome,
             uf: $scope.uf,
             cidade: $scope.cidade,
             distancia: $scope.distancia,
@@ -280,7 +286,6 @@ angular.module('app.controllers', [])
         $http.get('http://dev.viniciusbrito.com/api/pid/'+id+'/show').then(
         function(response) {
             $scope.info = response.data;
-            $rootScope.getDistance($scope.info.endereco.latitude, $scope.info.endereco.longitude);
             $ionicLoading.hide();
         },    
         function(){
