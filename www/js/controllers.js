@@ -69,7 +69,7 @@ angular.module('app.controllers', [])
 
                 $scope.infowindow.setContent('Distancia '+response.routes[0].legs[0].distance.text + "<br/> Duração: " + response.routes[0].legs[0].duration.text + " ");
                 $scope.infowindow.setPosition(response.routes[0].legs[0].end_location);
-                $scope.infowindow.open($scope.map);                
+                $scope.infowindow.open($scope.map);
                 
                 $rootScope.closeModal(2);
                 $ionicLoading.hide();
@@ -85,6 +85,7 @@ angular.module('app.controllers', [])
     }
 
     $rootScope.makeMarkers = function(pontos, tipo) {
+        $scope.infowindow.close($scope.map);
         $scope.directionsDisplay.setMap(null);
         if(typeof $rootScope.markers != "undefined" && $rootScope.markers.length > 0) {
             for (var i = 0; i < $rootScope.markers.length; i++) {
@@ -93,7 +94,7 @@ angular.module('app.controllers', [])
         }        
         $rootScope.markers = [];
 
-        angular.forEach(pontos, function (i, item) {
+        angular.forEach(pontos.dados, function (i, item) {
             var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(i.latitude, i.longitude),
                 map: $scope.map,
@@ -113,7 +114,7 @@ angular.module('app.controllers', [])
             $rootScope.markerCluster = new MarkerClusterer($scope.map, $rootScope.markers, {minimumClusterSize: 10});
             $scope.map.setZoom(4);
             var geocoder =  new google.maps.Geocoder();
-            var uf = pontos[0].uf;
+            var uf = pontos.uf;
             geocoder.geocode({ 'address': uf+', Brasil'}, function(results, status) {
                 if (status === google.maps.GeocoderStatus.OK) {
                    $scope.map.setCenter(results[0].geometry.location);
@@ -125,7 +126,7 @@ angular.module('app.controllers', [])
                 if(typeof $rootScope.markerCluster === "object") {
                     $rootScope.markerCluster.clearMarkers();
                 }
-                $rootScope.markerCluster = new MarkerClusterer($scope.map, $rootScope.markers, {minimumClusterSize: 10});
+                $rootScope.markerCluster = new MarkerClusterer($scope.map, $rootScope.markers, {minimumClusterSize: 5});
                 $scope.map.setCenter($rootScope.pos);
                 $scope.map.setZoom(13);
             });
@@ -154,10 +155,12 @@ angular.module('app.controllers', [])
         });
 
         $rootScope.openModal = function(index) {
-            if(index == 1)
+            if(index == 1) {
                 $scope.modal1.show();
-            else
+            }
+            else {
                 $scope.modal2.show();
+            }
         };
 
         $rootScope.closeModal = function(index) {
@@ -186,9 +189,12 @@ angular.module('app.controllers', [])
 ])
 
 .controller('PesquisaController', function($scope, $http, $ionicLoading, $ionicPopup, $rootScope) {
+    /*URL do servidor backend*/
+    $rootScope.baseURL = 'http://dev.viniciusbrito.com'; //URL produção
+    //$rootScope.baseURL = 'http://sismid.app'; //Meu URL desenvolvimento
     $scope.ufs = [];
 
-    // Setup the loader
+    // Config loading
     $ionicLoading.show({
         content: 'Loading',
         animation: 'fade-in',
@@ -196,7 +202,7 @@ angular.module('app.controllers', [])
         maxWidth: 200,
         showDelay: 0
     });
-    $http.get('http://dev.viniciusbrito.com/api/uf').then(
+    $http.get($rootScope.baseURL+'/api/uf').then(
     function(response) {
         $scope.ufs = response.data;
         $ionicLoading.hide();
@@ -211,10 +217,10 @@ angular.module('app.controllers', [])
     );
 
     $scope.uf = 0;
-    $scope.distancia = 10.0;
+    $scope.distancia = 5.0;
 
     $scope.ufChange = function() {
-        // Setup the loader
+        // Config loading
         $ionicLoading.show({
             content: 'Loading',
             animation: 'fade-in',
@@ -223,7 +229,7 @@ angular.module('app.controllers', [])
             showDelay: 0
         });
         $scope.cidades = [];
-        $http.get('http://dev.viniciusbrito.com/api/uf/'+$scope.uf+'/cidades').then(
+        $http.get($rootScope.baseURL+'/api/uf/'+$scope.uf+'/cidades').then(
             function(response) {
               $scope.cidades = response.data;
               $ionicLoading.hide();
@@ -256,7 +262,7 @@ angular.module('app.controllers', [])
             maxWidth: 200,
             showDelay: 0
         });
-        $http.post('http://dev.viniciusbrito.com/api/app/mapa', data).then(
+        $http.post($rootScope.baseURL+'/api/app/mapa', data).then(
             function(response){                
                 $rootScope.makeMarkers(response.data, $scope.uf);
                 $rootScope.closeModal(1);
@@ -283,7 +289,7 @@ angular.module('app.controllers', [])
             showDelay: 0
         });
         $scope.info = [];
-        $http.get('http://dev.viniciusbrito.com/api/pid/'+id+'/show').then(
+        $http.get($rootScope.baseURL+'/api/pid/'+id+'/show').then(
         function(response) {
             $scope.info = response.data;
             $ionicLoading.hide();

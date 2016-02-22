@@ -12,14 +12,13 @@
 			</div>
 			<div class="item item-body">
 				<a href="#" class="item">
-					<i class="icon ion-navigate"></i>
-					{{ info.endereco.logradouro }}
-					{{ info.endereco.numero }}
-					{{ info.endereco.complemento }}
-					{{ info.endereco.bairro }} <br/>
-					CEP {{ info.endereco.cep }} <br/>
-					{{ info.endereco.cidade }} - {{ info.endereco.uf }} <br/>	
-					<button class="ion-icon ion-android-walk" title="Como chegar caminhando" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'WALKING')"></button>
+					<b>Logradouro:</b> {{ info.endereco.logradouro }}<br/>
+					<b>Numero:</b> {{ info.endereco.numero }}<br/>
+					<b>Complemento:</b> {{ info.endereco.complemento }}<br/>
+					<b>Bairro:</b> {{ info.endereco.bairro }} <br/>
+					<b>CEP:</b> {{ info.endereco.cep }} <br/>
+					<b>Municipio:</b> {{ info.endereco.cidade }} <b>UF:</b> {{ info.endereco.uf }} <br/>	
+					<b>Como chegar:</b> <button class="ion-icon ion-android-walk" title="Como chegar caminhando" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'WALKING')"></button>
 					<button class="ion-icon ion-android-bicycle" title="Como chegar de bicicleta" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'BICYCLING')"></button>
 					<button class="ion-icon ion-android-car" title="Como chegar de carro" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'DRIVING')"></button>
 					<button class="ion-icon ion-android-bus" title="Como chegar de transporte público" ng-click="getRoute(info.endereco.latitude, info.endereco.longitude, 'TRANSIT')"></button>
@@ -30,12 +29,16 @@
 			</div>
 		</div>	
 
-		<div class="item card" ng-show="info.fotos.length > 0">
-			<ion-slide-box auto-play="true" does-continue="true">
-				<ion-slide ng-repeat="foto in info.fotos">
-					<img class="image-slide" ng-src="http://localhost:8000/api/{{ info.idPid }}/fotos/{{ foto.nome }}">
-				</ion-slide>
-			</ion-slide-box>
-		</div>
+		
+		<!-- 
+			DESATIVADO por não funcionar corretamente. Objetivo exibir as fotos dos pids quando cadastradas.
+			<div class="item card" ng-show="info.fotos.length > 0">
+				<ion-slide-box auto-play="true" does-continue="true">
+					<ion-slide ng-repeat="foto in info.fotos">
+						<img class="image-slide" ng-src="{{ baseURL }}/api/{{ info.idPid }}/fotos/{{ foto.nome }}">
+					</ion-slide>
+				</ion-slide-box>
+			</div>
+		-->
     </ion-content>
 </div>
