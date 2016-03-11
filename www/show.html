@@ -29,6 +29,16 @@
 			</div>
 		</div>	
 
+		<div class="list card" ng-show="info.servicos.length > 0">
+			<div class="item">
+				<h3>Serviços oferecidos</h3>
+			</div>
+			<div class="item item-body">
+				<ul class="list">
+					<li class="item" ng-repeat="servico in info.servicos">{{ servico }}</li>
+				</ul>
+			</div>
+		</div>
 		
 		<!-- 
 			DESATIVADO por não funcionar corretamente. Objetivo exibir as fotos dos pids quando cadastradas.
